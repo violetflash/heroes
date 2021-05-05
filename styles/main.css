@@ -1,5 +1,7 @@
 html {
     box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 }
 
 *,
@@ -23,13 +25,45 @@ body {
 
 .header__img {
     width: 100%;
-    position: absolute;
-    top: -200px;
+    /*position: absolute;*/
+    /*top: -200px;*/
     height: 200px;
     background-image: url('../img/avengers.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center top;
     border-bottom: 5px solid #3b0303;
+}
 
+.heroes {
+    display: flex;
+}
+
+.title {
+    color: #fff;
+    text-align: center;
+}
+
+.filter {
+    flex: 1 1 300px;
+    padding: 10px;
+    height: 500px;
+    background-color: #ccc;
+    border-right: 20px solid #3b0303;
+    transform: translateX(-280px);
+    transition: all 0.3s ease-in-out;
+}
+
+.filter.js-active {
+    transform: translateX(0);
+}
+
+.cards {
+    flex: 1 1 calc(100% - 300px);
+}
+
+.row {
+    color: #cccccc;
+    font-weight: 700;
+    font-size: 18px;
 }
