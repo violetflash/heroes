@@ -67,3 +67,7 @@ body {
     font-weight: 700;
     font-size: 18px;
 }
+
+#actor-label {
+    display: block;
+}

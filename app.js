@@ -1,35 +1,4 @@
-/*
-Задания на КОНКУРС ЛУЧШИХ РАБОТ
-1) Загрузить JSON файл
-2) При помощи ajax запросов к загруженному файлу сформировать на странице карточки
-Героев со всеми данными (фото, имя, настоящее имя,  список фильмов, статус).
-1 персонаж - 1 карточка.
-3) Реализовать переключатели-фильтры по фильмам.
-    Выпадающее меню или список, на ваше усмотрение
-Показывать только те карточки, которые подходят под выбранный фильтр.
-    Стилизация карточек и всего внешнего вида - на ваше усмотрение.
-    Упор сделать на главную цель - донесение информации, никаких вырвиглазных цветов и шрифтов.
-4) Добавить ссылку на выполненное задание
-Оцениваться будет в основном чистота кода и правильность реализации.
-    В случае идеального кода у претендентов - будем смотреть на стили.
-*/
-
 const headerImg = document.querySelector('.header__img');
-
-// const headerImgArrival = () => {
-//     const moveImg = (img) => {
-//         const imgTop = img.getBoundingClientRect().top;
-//         console.log(imgTop);
-//         if (imgTop < 0) {
-//             img.style.top = imgTop + 1 + 'px';
-//
-//         } else {
-//             clearInterval(headerInterval);
-//         }
-//     };
-//     const headerInterval = setInterval(moveImg, 0.1, headerImg);
-//     // headerImg.style.position = 'block';
-// };
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
@@ -56,11 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     element.movies.forEach(movie => moviesSet.add(movie));
                 }
                 if (element.actors) {
-                    element.movies.forEach(movie => moviesSet.add(movie));
+                    actorsSet.add(element.actors);
                 }
             });
-            console.log(this.movies);
-            this.createFilters();
+
+            this.createFilters(moviesSet, actorsSet);
         }
 
         createBase() {
@@ -75,23 +44,49 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
-        createFilters() {
+        createSelectOption(target, value) {
+            const option = document.createElement('option');
+            option.textContent = value;
+            option.value = value;
+            target.append(option);
+        }
+
+        createFilters(movies, actors) {
             //iterate movies Set to create a link for each movie
             const filter = document.querySelector('.filter');
 
             //create movies select
+            filter.innerHTML = '<label for="movie-option">filter by film:</label>';
             const moviesSelect = document.createElement('select');
-            const moviesLabel = document.createElement('label');
-            moviesLabel.for = 'movie-option';
-            moviesLabel.textContent = 'filter by film:';
-            this.movies.forEach(elem => {
-                const option = document.createElement('option');
-                option.textContent = elem;
-                option.id = 'movie-option';
-                moviesSelect.append(option);
+            this.createSelectOption(moviesSelect, 'Choose film');
+            movies.forEach(elem => {
+                this.createSelectOption(moviesSelect, elem);
             });
-            filter.append(moviesLabel);
             filter.append(moviesSelect);
+
+            //actors filter
+            //if checkbox checked - filter is visible
+            filter.innerHTML += `
+                <label for="actor-checkbox">search for the exact actor:
+                    <input id="actor-checkbox" type="checkbox">
+                </label>`;
+            const actorCheckbox = document.getElementById('actor-checkbox');
+            actorCheckbox.addEventListener('change', () => {
+                if (actorCheckbox.checked) {
+                    moviesSelect.selectedIndex = 0;
+                    filter.innerHTML += '<label id="actor-label" for="actor-select">filter by actor:</label>';
+                    const actorSelect = document.createElement('select');
+                    actorSelect.id = 'actor-select';
+                    actors.forEach(elem => {
+                        this.createSelectOption(actorSelect, elem);
+                    });
+                    filter.append(actorSelect);
+                } else {
+                    document.getElementById('actor-label').remove();
+                    document.getElementById('actor-select').remove();
+                }
+            });
+            //create actors filter
 
 
         }
@@ -107,8 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
         }
-
-
 
         init() {
             this.createBase();
