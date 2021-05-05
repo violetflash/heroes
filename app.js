@@ -67,14 +67,16 @@ document.addEventListener('DOMContentLoaded', () => {
             //actors filter
             //if checkbox checked - filter is visible
             filter.innerHTML += `
-                <label for="actor-checkbox">search for the exact actor:
+                <label>search for the exact actor:
                     <input id="actor-checkbox" type="checkbox">
                 </label>`;
+
             const actorCheckbox = document.getElementById('actor-checkbox');
             actorCheckbox.addEventListener('change', () => {
+
                 if (actorCheckbox.checked) {
                     moviesSelect.selectedIndex = 0;
-                    filter.innerHTML += '<label id="actor-label" for="actor-select">filter by actor:</label>';
+                    filter.innerHTML += '<label id="select-actor-label" for="actor-select">filter by actor:</label>';
                     const actorSelect = document.createElement('select');
                     actorSelect.id = 'actor-select';
                     actors.forEach(elem => {
@@ -82,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     filter.append(actorSelect);
                 } else {
-                    document.getElementById('actor-label').remove();
+                    document.getElementById('select-actor-label').remove();
                     document.getElementById('actor-select').remove();
                 }
             });
