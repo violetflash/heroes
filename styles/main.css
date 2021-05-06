@@ -45,12 +45,12 @@ body {
 }
 
 .filter {
-    flex: 1 1 300px;
+    flex: 1 1 320px;
     padding: 10px;
     height: 500px;
     background-color: #ccc;
     border-right: 20px solid #3b0303;
-    transform: translateX(-280px);
+    /*transform: translateX(-280px);*/
     transition: all 0.3s ease-in-out;
 }
 
@@ -58,16 +58,51 @@ body {
     transform: translateX(0);
 }
 
+.filter__row {
+    margin-bottom: 10px;
+}
+
+.actor-checkbox-filter,
+.gender-filter,
+.status-filter {
+    display: flex;
+}
+
+.name-filter,
+.species-filter,
+.movie-filter {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.clear-row-filter {
+    margin: 0 0 0 15px;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    background-image: url('../img/delete.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.clear-row-filter:hover {
+    background-image: url('../img/delete-filled.png');
+}
+
+label {
+    display: block;
+    /*width: 100%;*/
+}
+
+select {
+    height: 20px;
+}
+
 .cards {
     flex: 1 1 calc(100% - 300px);
-}
-
-.row {
-    color: #cccccc;
-    font-weight: 700;
-    font-size: 18px;
-}
-
-#actor-label {
-    display: block;
 }

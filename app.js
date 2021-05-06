@@ -1,10 +1,8 @@
-const headerImg = document.querySelector('.header__img');
-
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
     class HeroesCards {
-        constructor({root, db, filterBlock, cardsBlock}) {
+        constructor({ root, db, filterBlock, cardsBlock }) {
             this.root = document.querySelector(root);
             this.db = db;
             this.movies = new Set();
@@ -17,78 +15,170 @@ document.addEventListener('DOMContentLoaded', () => {
             // console.log(result);
             const result = await response.json();
             console.log(result);
-            const moviesSet = new Set();
-            const actorsSet = new Set();
+            const movies = new Set();
+            const actors = new Set();
+            const names = new Set();
+            const species = new Set();
 
             result.forEach(element => {
                 if (element.movies) {
-                    element.movies.forEach(movie => moviesSet.add(movie));
+                    element.movies.forEach(movie => movies.add(movie));
                 }
                 if (element.actors) {
-                    actorsSet.add(element.actors);
+                    actors.add(element.actors);
+                }
+                if (element.name) {
+                    names.add(element.name);
+                }
+                if (element.species) {
+                    species.add(element.species);
                 }
             });
 
-            this.createFilters(moviesSet, actorsSet);
+
+            this.createFilters(movies, actors, names, species);
         }
 
         createBase() {
             this.root.innerHTML = `
                 <h1 class="title">Find your Hero!</h1>
-                <div class="heroes">
-                    <div class="filter">
+                <section class="heroes">
+                    <aside class="filter">
                         
-                    </div>
-                    <div class="cards"></div>
-                </div>
+                    </aside>
+                    <section class="cards"></section>
+                </section>
             `;
         }
 
-        createSelectOption(target, value) {
-            const option = document.createElement('option');
-            option.textContent = value;
-            option.value = value;
-            target.append(option);
-        }
 
-        createFilters(movies, actors) {
-            //iterate movies Set to create a link for each movie
+        createFilters(movies, actors, heroesNames, species) {
             const filter = document.querySelector('.filter');
 
-            //create movies select
-            filter.innerHTML = '<label for="movie-option">filter by film:</label>';
-            const moviesSelect = document.createElement('select');
-            this.createSelectOption(moviesSelect, 'Choose film');
-            movies.forEach(elem => {
-                this.createSelectOption(moviesSelect, elem);
-            });
-            filter.append(moviesSelect);
+            const createSelectOption = (target, value) => {
+                const option = document.createElement('option');
+                option.textContent = value;
+                option.value = value;
+                target.append(option);
+            };
+
+            const createSelect = (id, fillsFrom, firstOption, target = filter) => {
+                const select = document.createElement('select');
+                select.id = id;
+                //initial empty option
+                createSelectOption(select, firstOption);
+                fillsFrom.forEach(elem => {
+                    createSelectOption(select, elem);
+                });
+                target.append(select);
+            };
+
+            const createLabel = (id, linkedWith, text, target = filter) => {
+                const label = document.createElement('label');
+                label.id = id;
+                label.setAttribute('for', linkedWith);
+                label.innerText = text;
+                target.append(label);
+            };
+
+            const createCheckbox = (id, target = filter) => {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = id;
+                target.append(checkbox);
+            };
+
+            const createClearButton = (target) => {
+                const button = document.createElement('button');
+                button.className = 'clear-row-filter';
+                button.value = 'clear';
+                target.append(button);
+            };
+
+            const createRow = (className, target = filter) => {
+                const div = document.createElement('div');
+                div.className = 'filter__row';
+                div.classList.add(className);
+                target.append(div);
+            };
+
+            const disableElements = (exception, target = filter) => {
+                const elements = target.querySelectorAll('input, select');
+                elements.forEach(elem => {
+                    if (elem.id === exception) return;
+                    if (elem.type.toLowerCase() === 'select') {
+                        elem.selectedIndex = 0;
+                    }
+                    elem.setAttribute('disabled', 'true');
+                });
+            };
+
+            const enableElements = (target = filter) => {
+                const elements = target.querySelectorAll('input, select');
+                elements.forEach(elem => {
+                    elem.removeAttribute('disabled');
+                });
+            };
+
+            const removeElement = selector => document.querySelector(selector).remove();
+
+            //name select
+            createRow('name-filter');
+            const nameRow = document.querySelector('.name-filter');
+            createLabel('name-label', 'name-select', 'Filter by Hero name:', nameRow);
+            createSelect('name-select', heroesNames, 'Choose hero...', nameRow);
+            createClearButton(nameRow);
+
+            //species select
+            createRow('species-filter');
+            const speciesRow = document.querySelector('.species-filter');
+            createLabel('species-label', 'species-select', 'Filter by Hero species:', speciesRow);
+            createSelect('species-select', species, 'Choose species...', speciesRow);
+            createClearButton(speciesRow);
+
+            //movies select
+            createRow('movie-filter');
+            const movieRow = document.querySelector('.movie-filter');
+            createLabel('movies-label', 'movies-select', 'Filter by Film:', movieRow);
+            createSelect('movies-select', movies, 'Choose film...', movieRow);
+            createClearButton(movieRow);
 
             //actors filter
-            //if checkbox checked - filter is visible
-            filter.innerHTML += `
-                <label>search for the exact actor:
-                    <input id="actor-checkbox" type="checkbox">
-                </label>`;
+            createRow('actor-filter');
+            const actorRow = document.querySelector('.actor-filter');
+            createRow('actor-checkbox-filter', actorRow);
+            const actorCheckRow = document.querySelector('.actor-checkbox-filter');
+            createLabel('actor-label', 'actor-checkbox', 'Search for the exact Actor:', actorCheckRow);
+            createCheckbox('actor-checkbox', actorCheckRow);
 
             const actorCheckbox = document.getElementById('actor-checkbox');
+            const moviesSelect = document.getElementById('movies-select');
+
             actorCheckbox.addEventListener('change', () => {
 
                 if (actorCheckbox.checked) {
-                    moviesSelect.selectedIndex = 0;
-                    filter.innerHTML += '<label id="select-actor-label" for="actor-select">filter by actor:</label>';
-                    const actorSelect = document.createElement('select');
-                    actorSelect.id = 'actor-select';
-                    actors.forEach(elem => {
-                        this.createSelectOption(actorSelect, elem);
-                    });
-                    filter.append(actorSelect);
+                    disableElements('actor-checkbox');
+                    createLabel('select-actor-label', 'actor-select', 'filter by actor:', actorRow);
+                    createSelect('actor-select', actors, 'Choose actor...', actorRow);
                 } else {
-                    document.getElementById('select-actor-label').remove();
-                    document.getElementById('actor-select').remove();
+                    enableElements();
+                    removeElement('#select-actor-label');
+                    removeElement('#actor-select');
                 }
             });
-            //create actors filter
+
+            //gender checkbox
+            createRow('gender-filter');
+            const genderRow = document.querySelector('.gender-filter');
+            createLabel('gender-label', 'gender-checkbox', 'female', genderRow);
+            createCheckbox('gender-checkbox', genderRow);
+
+            //status checkbox
+            createRow('status-filter');
+            const statusRow = document.querySelector('.status-filter');
+            createLabel('status-label', 'status-checkbox', 'Status: deceased', statusRow);
+            createCheckbox('status-checkbox', statusRow);
+
 
 
         }
@@ -102,7 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
             filter.addEventListener('mouseout', () => {
                 filter.classList.remove('js-active');
             });
-
         }
 
         init() {
