@@ -1,3 +1,7 @@
+//TODO уведомляшка снизу слева с советом отфильтровать героев и кнопкой GOT IT!, которая прекратит повторение показа
+//https://www.youtube.com/watch?v=QGVXmoZWZuw&ab_channel=TylerPotts
+//https://www.youtube.com/watch?v=GUEB9FogoP8&ab_channel=DevEd
+
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
@@ -5,9 +9,19 @@ document.addEventListener('DOMContentLoaded', () => {
         constructor({ root, db, filterBlock, cardsBlock }) {
             this.root = document.querySelector(root);
             this.db = db;
-            this.movies = new Set();
-            this.filterBlock = filterBlock;
             this.cardsBlock = cardsBlock;
+            this.movies = new Set();
+
+        }
+
+        render(array) {
+            console.log(1)
+            const cardsBlock = document.querySelector('.cards');
+            array.forEach((elem, index) => {
+                const p = document.createElement('p');
+                p.innerText = `${index + 1}): ${JSON.stringify(elem)}`;
+                cardsBlock.append(p);
+            });
         }
 
         async getMoviesData() {
@@ -35,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-
+            this.render(result);
             this.createFilters(movies, actors, names, species);
         }
 
@@ -43,8 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.root.innerHTML = `
                 <h1 class="title">Find your Hero!</h1>
                 <section class="heroes">
-                    <aside class="filter">
-                        
+                    <aside class="aside">
+                        <form class="filter"></form>
                     </aside>
                     <section class="cards"></section>
                 </section>
@@ -152,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
             createCheckbox('actor-checkbox', actorCheckRow);
 
             const actorCheckbox = document.getElementById('actor-checkbox');
-            const moviesSelect = document.getElementById('movies-select');
 
             actorCheckbox.addEventListener('change', () => {
 
@@ -179,18 +192,31 @@ document.addEventListener('DOMContentLoaded', () => {
             createLabel('status-label', 'status-checkbox', 'Status: deceased', statusRow);
             createCheckbox('status-checkbox', statusRow);
 
-
-
+            const submitBtn = document.createElement('button');
+            submitBtn.type = 'submit';
+            submitBtn.innerText = 'Search';
+            filter.append(submitBtn);
         }
 
         addEventListeners() {
             const filter = document.querySelector('.filter');
-            filter.addEventListener('mouseover', () => {
-                filter.classList.add('js-active');
-            });
+            // filter.addEventListener('mouseover', () => {
+            //     filter.classList.add('js-active');
+            // });
+            //
+            // filter.addEventListener('mouseout', () => {
+            //     filter.classList.remove('js-active');
+            // });
+            const movieHandler = (e) => {
+                console.log(e.target.value);
+                fil
+            };
 
-            filter.addEventListener('mouseout', () => {
-                filter.classList.remove('js-active');
+            filter.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.id === 'name-select') {
+                    target.addEventListener('change', movieHandler);
+                }
             });
         }
 
