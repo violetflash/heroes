@@ -36,17 +36,20 @@ body {
 }
 
 .title {
-    color: #fff;
+    /*color: #fff;*/
     text-align: center;
+    background-color: inherit;
+    margin: 0;
+    padding: 20px 0;
 }
 
 .filter {
     flex: 1 1 320px;
     padding: 10px;
     height: 500px;
-    background-color: #ccc;
+    background-color: inherits;
     border-right: 20px solid #3b0303;
-    /*transform: translateX(-280px);*/
+    /*transform: translateX(-95%);*/
     transition: all 0.3s ease-in-out;
 }
 
@@ -100,6 +103,18 @@ select {
 }
 
 .cards {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
     flex: 1 1 calc(100% - 300px);
     padding: 0 50px;
+}
+
+.card__image {
+    width: 250px;
+}
+
+.card__figure {
+    /*margin: 0;*/
 }
