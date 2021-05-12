@@ -11,11 +11,11 @@ class HeroesCards {
         this.db = db;
         this.cardsBlock = cardsBlock;
         this.movies = new Set();
-
     }
 
     render(array) {
         const cardsBlock = document.querySelector('.cards');
+        cardsBlock.innerHTML = '';
         array.forEach((elem) => {
             this.renderCard(elem, cardsBlock);
         });
@@ -49,60 +49,36 @@ class HeroesCards {
 
         const body = document.createElement('div');
         body.className = 'card__body';
+        article.append(body);
 
-        const cardTitle = document.createElement('h2');
-        cardTitle.className = 'card__name';
-        cardTitle.textContent = hero.name;
 
-        article.append(cardTitle);
+        createRow(body, 'h2', 'card__name', `name: ${hero.name}`);
+        const realName = hero.realName ? hero.realName : 'unknown';
+        createRow(body, 'h3', 'card__real-name', `real name: ${realName}`);
+        createRow(body, 'p', 'card__species', `species: ${hero.species}`);
+        const birthDay = hero.birthDay ? hero.birthDay : 'unknown';
+        createRow(body, 'p', 'card__birthday', `birthday: ${birthDay}`);
+        const gender = hero.gender ? hero.gender : 'unknown';
+        createRow(body, 'p', 'card__gender', `gender: ${gender}`);
+        const citizenship = hero.citizenship ? hero.citizenship : 'unknown';
+        createRow(body, 'p', 'card__citizenship', `citizenship: ${citizenship}`);
+        createRow(body, 'p', 'card__status', `status: ${hero.status}`);
 
-        if (hero.realName) {
-            const cardSubtitle = document.createElement('h3');
-            cardSubtitle.className = 'card__real-name';
-            cardSubtitle.textContent = `Real name: ${hero.realName}`;
-            article.append(cardSubtitle);
+        const movies = document.createElement('div');
+        movies.className = 'card__movies';
+        movies.textContent = 'Movies:';
+        body.append(movies);
+
+        if (hero.movies) {
+            hero.movies.forEach((movie, index) => {
+                createRow(movies, 'p', 'card__movie', `${index + 1}) ${movie}`);
+            });
+        } else {
+            createRow(movies, 'p', 'card__movie', `no movies`);
         }
-
-        const species = document.createElement('p');
-        species.className = 'card__species';
-        species.textContent = hero.species;
-
-        article.append(species);
-
-
-
 
 
         target.append(article);
-
-        // return `
-        //     <article class="card">
-        //       <div class="card__header">
-        //         <figure class="card__figure">
-        //           <img src="${hero.photo}" alt="" class="card__image">
-        //         </figure>
-        //       </div>
-        //       <div class="card__body">
-        //         <h2 class="card__title">${hero.name}</h2>
-        //         <h3 class="card__subtitle">
-        //           Card Subtitle
-        //         </h3>
-        //         <p class="card__copy">
-        //           Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis sint perspiciatis
-        //           deleniti ab possimus ut? Ducimus fugiat hic velit necessitatibus. Lorem ipsum dolor
-        //           sit amet consectetur adipisicing elit. Repellendus sapiente harum soluta excepturi ut
-        //           temporibus, at amet corporis id asperiores.
-        //         </p>
-        //       </div>
-        //       <footer class="card__footer">
-        //         <div class="card__actions">
-        //           <button class="button">
-        //             Button
-        //           </button>
-        //         </div>
-        //       </footer>
-        //     </article>
-        // `;
     }
 
 
@@ -138,7 +114,7 @@ class HeroesCards {
 
     createBase() {
         this.root.innerHTML = `
-            <h1 class="title">Find your Hero!</h1>
+            
             <section class="heroes">
                 <aside class="aside">
                     <form class="filter"></form>
@@ -279,6 +255,7 @@ class HeroesCards {
         submitBtn.type = 'submit';
         submitBtn.id = 'search-btn';
         submitBtn.innerText = 'Search';
+        // submitBtn.disabled = true;
         filter.append(submitBtn);
     }
 
@@ -291,7 +268,7 @@ class HeroesCards {
         // filter.addEventListener('mouseout', () => {
         //     filter.classList.remove('js-active');
         // });
-        const movieHandler = (e) => {
+        const nameHandler = (e) => {
             console.log(e.target.value);
             // fil
         };
@@ -299,17 +276,36 @@ class HeroesCards {
         const submitBtnHandler = () => {
             console.log(1)
             console.log(this.response);
-        }
+        };
+
+        const moviesHandler = (e) => {
+            const film = e.target.value;
+            console.log(film);
+            const cards = this.response.filter(card => {
+                if (card.movies) {
+                    for (const movie of card.movies) {
+                        if (movie === film) {
+                            return card;
+                        }
+                    }
+                }
+            });
+            this.render(cards);
+        };
 
         filter.addEventListener('click', (e) => {
             const target = e.target;
             if (target.id === 'name-select') {
-                target.addEventListener('change', movieHandler);
+                target.addEventListener('change', nameHandler);
             }
 
             if (target.id === 'search-btn') {
-                e.preventDefault()
+                e.preventDefault();
                 target.addEventListener('click', submitBtnHandler);
+            }
+
+            if (target.id === 'movies-select') {
+                target.addEventListener('change', moviesHandler);
             }
         });
 
@@ -317,9 +313,7 @@ class HeroesCards {
 
     init() {
         this.createBase();
-        const button = document.querySelector('.search-btn');
         this.fetchData();
-        console.log(this.response);
         this.addEventListeners();
     }
 }
