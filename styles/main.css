@@ -36,7 +36,7 @@ body {
 }
 
 .aside {
-    border-right: 20px solid #3b0303;
+    /*border-right: 20px solid #3b0303;*/
 
 }
 
@@ -46,6 +46,12 @@ body {
     background-color: inherit;
     margin: 0;
     padding: 20px 0;
+}
+
+#cards-filter-title {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
 }
 
 .filter {

@@ -13,11 +13,14 @@ class HeroesCards {
         this.movies = new Set();
     }
 
-    render(array) {
-        const cardsBlock = document.querySelector('.cards');
-        cardsBlock.innerHTML = '';
+    render(array, title) {
+        const cards = document.querySelector('.cards');
+        cards.innerHTML = '';
+
+        const cardsTitle = document.getElementById('cards-filter-title');
+        cardsTitle.textContent = title;
         array.forEach((elem) => {
-            this.renderCard(elem, cardsBlock);
+            this.renderCard(elem, cards);
         });
     }
 
@@ -58,7 +61,7 @@ class HeroesCards {
         createRow(body, 'p', 'card__species', `species: ${hero.species}`);
         const birthDay = hero.birthDay ? hero.birthDay : 'unknown';
         createRow(body, 'p', 'card__birthday', `birthday: ${birthDay}`);
-        const gender = hero.gender ? hero.gender : 'unknown';
+        const gender = hero.genger ? hero.genger : 'unknown';
         createRow(body, 'p', 'card__gender', `gender: ${gender}`);
         const citizenship = hero.citizenship ? hero.citizenship : 'unknown';
         createRow(body, 'p', 'card__citizenship', `citizenship: ${citizenship}`);
@@ -119,7 +122,10 @@ class HeroesCards {
                 <aside class="aside">
                     <form class="filter"></form>
                 </aside>
-                <section class="cards"></section>
+                <section class="cards-block">
+                    <h1 id="cards-filter-title"></h1>
+                    <div class="cards"></div>
+                </section>
             </section>
         `;
     }
@@ -242,13 +248,13 @@ class HeroesCards {
         //gender checkbox
         createRow('gender-filter');
         const genderRow = document.querySelector('.gender-filter');
-        createLabel('gender-label', 'gender-checkbox', 'female', genderRow);
+        createLabel('gender-label', 'gender-checkbox', 'switch male/female', genderRow);
         createCheckbox('gender-checkbox', genderRow);
 
         //status checkbox
         createRow('status-filter');
         const statusRow = document.querySelector('.status-filter');
-        createLabel('status-label', 'status-checkbox', 'Status: deceased', statusRow);
+        createLabel('status-label', 'status-checkbox', 'switch Status: deceased/alive', statusRow);
         createCheckbox('status-checkbox', statusRow);
 
         const submitBtn = document.createElement('button');
@@ -268,19 +274,36 @@ class HeroesCards {
         // filter.addEventListener('mouseout', () => {
         //     filter.classList.remove('js-active');
         // });
+
+
+
         const nameHandler = (e) => {
-            console.log(e.target.value);
-            // fil
+            const name = e.target.value;
+            const cards = this.response.filter(card => {
+                if (card.name === name) {
+                    return card;
+                }
+            });
+            this.render(cards);
+        };
+
+        const speciesHandler = e => {
+            const species = e.target.value;
+            const cards = this.response.filter(card => {
+                if (card.species === species) {
+                    return card;
+                }
+            });
+            this.render(cards, 'Species filter:');
         };
 
         const submitBtnHandler = () => {
-            console.log(1)
             console.log(this.response);
         };
 
         const moviesHandler = (e) => {
             const film = e.target.value;
-            console.log(film);
+
             const cards = this.response.filter(card => {
                 if (card.movies) {
                     for (const movie of card.movies) {
@@ -290,11 +313,61 @@ class HeroesCards {
                     }
                 }
             });
-            this.render(cards);
+            this.render(cards, 'Filtered by movie:');
+        };
+
+        const actorHandler = (e) => {
+            const actor = e.target.value;
+            const cards = this.response.filter(card => {
+                if (card.actors === actor) {
+                    return card;
+                }
+            });
+            this.render(cards, 'Filtered by Actor:');
+        };
+
+        const genderHandler = (e) => {
+            let cards;
+            if (e.target.checked) {
+                cards = this.response.filter(card => {
+                    if (card.genger === 'Female' || card.genger === 'female') {
+                        return card;
+                    }
+                });
+                this.render(cards, 'Females:');
+            } else {
+                cards = this.response.filter(card => {
+                    if (card.genger === 'male' || card.genger === 'Male') {
+                        return card;
+                    }
+                });
+                this.render(cards, 'Males:');
+            }
+
+        };
+
+        const statusHandler = (e) => {
+            let cards;
+            if (e.target.checked) {
+                cards = this.response.filter(card => {
+                    if (card.status === 'deceased') {
+                        return card;
+                    }
+                });
+                this.render(cards, 'Status: DECEASED');
+            } else {
+                cards = this.response.filter(card => {
+                    if (card.status === 'alive') {
+                        return card;
+                    }
+                });
+                this.render(cards, 'Status: ALIVE');
+            }
+
         };
 
         filter.addEventListener('click', (e) => {
-            const target = e.target;
+            let target = e.target;
             if (target.id === 'name-select') {
                 target.addEventListener('change', nameHandler);
             }
@@ -304,8 +377,27 @@ class HeroesCards {
                 target.addEventListener('click', submitBtnHandler);
             }
 
+            if (target.id === 'species-select') {
+                e.preventDefault();
+                target.addEventListener('change', speciesHandler);
+            }
+
             if (target.id === 'movies-select') {
                 target.addEventListener('change', moviesHandler);
+            }
+
+            if (target.id === 'actor-select') {
+                target.addEventListener('change', actorHandler);
+            }
+
+            if (target.id === 'gender-checkbox' || target.id === 'gender-label') {
+                target = document.getElementById('gender-checkbox');
+                target.addEventListener('click', genderHandler);
+            }
+
+            if (target.id === 'status-checkbox' || target.id === 'status-label') {
+                target = document.getElementById('status-checkbox');
+                target.addEventListener('click', statusHandler);
             }
         });
 
