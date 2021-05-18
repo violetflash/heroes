@@ -19,12 +19,12 @@ class HeroesCards {
 
         const cardsTitle = document.getElementById('cards-filter-title');
         cardsTitle.textContent = title;
-        array.forEach((elem) => {
+        array.forEach((elem, index) => {
             this.renderCard(elem, cards);
         });
     }
 
-    renderCard(hero, target) {
+    renderCardOld(hero, target) {
 
         const createRow = (target, tag, className, content = '') => {
             const elem = document.createElement(tag);
@@ -84,13 +84,32 @@ class HeroesCards {
         target.append(article);
     }
 
+    renderCard(hero, target) {
+
+        const card = `
+            <figure class="card">
+                <img src="${hero.photo}"/>
+                <figcaption>${hero.name}</figcaption>
+            </figure>
+        `;
+
+        target.insertAdjacentHTML('beforeend', card);
+    }
+
 
 
     async fetchData() {
-        this.response = await(await fetch(this.db)).json();
+
+        if (localStorage.getItem('marvelHeroes')) {
+            this.response = JSON.parse(localStorage.getItem('marvelHeroes'));
+        } else {
+            this.response = await(await fetch(this.db)).json();
+            localStorage.setItem('marvelHeroes', JSON.stringify(this.response));
+        }
 
         let response = this.response;
 
+        //выборка для формирования фильтров
         const movies = new Set();
         const actors = new Set();
         const names = new Set();
@@ -111,6 +130,7 @@ class HeroesCards {
             }
         });
 
+        //первая отрисовка
         this.render(response);
         this.createFilters(movies, actors, names, species);
     }
